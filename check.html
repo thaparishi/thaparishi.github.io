@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will You Be My Valentine? 💕</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            overflow: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .hearts-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 20px;
+            animation: float 6s ease-in-out infinite;
+            opacity: 0.6;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-30px) rotate(10deg);
+            }
+        }
+
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 60px 40px;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+            z-index: 2;
+            animation: slideIn 0.8s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-family: 'Pacifico', cursive;
+            color: #ff1744;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .emoji {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1.2rem;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .yes-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .yes-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(245, 87, 108, 0.5);
+        }
+
+        .no-btn {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #666;
+        }
+
+        .no-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(168, 237, 234, 0.5);
+        }
+
+        /* Fireworks styles */
+        .fireworks-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        .firework {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+        }
+
+        /* Sad overlay styles */
+        .sad-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .sad-content {
+            text-align: center;
+            color: white;
+        }
+
+        .sad-emoji {
+            font-size: 15rem;
+            animation: cry 1s ease-in-out infinite;
+        }
+
+        @keyframes cry {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .sad-text {
+            font-family: 'Pacifico', cursive;
+            font-size: 3rem;
+            margin-top: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Responsive design */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .emoji {
+                font-size: 3rem;
+            }
+
+            .container {
+                padding: 40px 30px;
+            }
+
+            button {
+                font-size: 1rem;
+                padding: 12px 30px;
+            }
+
+            .sad-emoji {
+                font-size: 10rem;
+            }
+
+            .sad-text {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .emoji {
+                font-size: 2.5rem;
+            }
+
+            .container {
+                padding: 30px 20px;
+            }
+
+            button {
+                font-size: 0.9rem;
+                padding: 10px 25px;
+            }
+
+            .buttons {
+                gap: 15px;
+            }
+
+            .sad-emoji {
+                font-size: 8rem;
+            }
+
+            .sad-text {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating hearts background -->
+    <div class="hearts-background" id="heartsContainer"></div>
+
+    <!-- Main container -->
+    <div class="container">
+        <div class="emoji">💘</div>
+        <h1>Will You Be My Valentine?</h1>
+        <div class="buttons">
+            <button class="yes-btn" onclick="handleYes()">Yes! 💕</button>
+            <button class="no-btn" onclick="handleNo()">No 😢</button>
+        </div>
+    </div>
+
+    <!-- Fireworks container -->
+    <div class="fireworks-container" id="fireworksContainer"></div>
+
+    <!-- Sad overlay -->
+    <div class="sad-overlay" id="sadOverlay">
+        <div class="sad-content">
+            <div class="sad-emoji">😢</div>
+            <div class="sad-text">I'm sorry...</div>
+        </div>
+    </div>
+
+    <!-- EmailJS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    
+    <script>
+        // Initialize EmailJS with your Public Key
+        // SETUP REQUIRED: Get your keys from https://www.emailjs.com/
+        // 1. Sign up at emailjs.com
+        // 2. Add an email service (Gmail)
+        // 3. Create an email template
+        // 4. Replace the values below with your actual keys
+        
+        const EMAILJS_PUBLIC_KEY = 'YOUR_PUBLIC_KEY'; // Replace with your EmailJS public key
+        const EMAILJS_SERVICE_ID = 'YOUR_SERVICE_ID'; // Replace with your service ID
+        const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID'; // Replace with your template ID
+        const YOUR_EMAIL = 'your-email@gmail.com'; // Your email address to receive notifications
+
+        emailjs.init(EMAILJS_PUBLIC_KEY);
+
+        // Create floating hearts background
+        function createHearts() {
+            const container = document.getElementById('heartsContainer');
+            const heartSymbols = ['❤️', '💕', '💖', '💗', '💘', '💝'];
+            
+            for (let i = 0; i < 15; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.textContent = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.top = Math.random() * 100 + '%';
+                heart.style.animationDelay = Math.random() * 2 + 's';
+                container.appendChild(heart);
+            }
+        }
+
+        // Create fireworks effect
+        function createFireworks() {
+            const container = document.getElementById('fireworksContainer');
+            const colors = ['#ff1744', '#f50057', '#ff4081', '#ffeb3b', '#4caf50', '#00bcd4', '#e91e63'];
+            
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    const x = Math.random() * window.innerWidth;
+                    const y = Math.random() * window.innerHeight * 0.6;
+                    
+                    for (let j = 0; j < 30; j++) {
+                        const firework = document.createElement('div');
+                        firework.className = 'firework';
+                        firework.style.left = x + 'px';
+                        firework.style.top = y + 'px';
+                        firework.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                        
+                        const angle = (Math.PI * 2 * j) / 30;
+                        const velocity = 100 + Math.random() * 100;
+                        const vx = Math.cos(angle) * velocity;
+                        const vy = Math.sin(angle) * velocity;
+                        
+                        container.appendChild(firework);
+                        
+                        let posX = x;
+                        let posY = y;
+                        let opacity = 1;
+                        
+                        const animate = () => {
+                            posX += vx / 60;
+                            posY += vy / 60;
+                            opacity -= 0.015;
+                            
+                            firework.style.left = posX + 'px';
+                            firework.style.top = posY + 'px';
+                            firework.style.opacity = opacity;
+                            
+                            if (opacity > 0) {
+                                requestAnimationFrame(animate);
+                            } else {
+                                firework.remove();
+                            }
+                        };
+                        
+                        animate();
+                    }
+                }, i * 300);
+            }
+        }
+
+        // Send email notification automatically
+        function sendEmail(response) {
+            const templateParams = {
+                to_email: YOUR_EMAIL,
+                response: response,
+                timestamp: new Date().toLocaleString(),
+                message: `Someone clicked: ${response}`
+            };
+
+            emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
+                .then(function(response) {
+                    console.log('Email sent successfully!', response.status, response.text);
+                }, function(error) {
+                    console.log('Failed to send email...', error);
+                });
+        }
+
+        // Handle Yes button click
+        function handleYes() {
+            // Create fireworks
+            createFireworks();
+            
+            // Send email automatically
+            sendEmail('YES 💕');
+            
+            // Show success message
+            setTimeout(() => {
+                alert('Thank you! 💕 Your response has been recorded!');
+            }, 1000);
+        }
+
+        // Handle No button click
+        function handleNo() {
+            // Send email automatically
+            sendEmail('NO 😢');
+            
+            // Show sad overlay after a short delay
+            setTimeout(() => {
+                const overlay = document.getElementById('sadOverlay');
+                overlay.style.display = 'flex';
+            }, 100);
+        }
+
+        // Initialize hearts on page load
+        window.onload = createHearts;
+    </script>
+</body>
+</html>

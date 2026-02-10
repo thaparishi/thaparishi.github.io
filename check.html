@@ -204,6 +204,81 @@
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
 
+        /* Name input screen styles */
+        .name-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .name-screen.hidden {
+            display: none;
+        }
+
+        .question-screen {
+            display: none;
+        }
+
+        .question-screen.show {
+            display: block;
+        }
+
+        input[type="text"] {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1.1rem;
+            padding: 15px 25px;
+            border: 2px solid #ff1744;
+            border-radius: 25px;
+            width: 100%;
+            max-width: 350px;
+            margin-top: 20px;
+            outline: none;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        input[type="text"]:focus {
+            border-color: #f5576c;
+            box-shadow: 0 0 15px rgba(245, 87, 108, 0.3);
+            transform: scale(1.02);
+        }
+
+        input[type="text"]::placeholder {
+            color: #999;
+        }
+
+        .continue-btn {
+            margin-top: 25px;
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1.1rem;
+            padding: 15px 50px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .continue-btn:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(245, 87, 108, 0.5);
+        }
+
+        .continue-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .greeting {
+            font-family: 'Pacifico', cursive;
+            color: #ff1744;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
         /* Responsive design */
         @media (max-width: 600px) {
             h1 {
@@ -229,6 +304,20 @@
 
             .sad-text {
                 font-size: 2rem;
+            }
+
+            .greeting {
+                font-size: 1.2rem;
+            }
+
+            input[type="text"] {
+                font-size: 1rem;
+                padding: 12px 20px;
+            }
+
+            .continue-btn {
+                font-size: 1rem;
+                padding: 12px 40px;
             }
         }
 
@@ -261,6 +350,20 @@
             .sad-text {
                 font-size: 1.5rem;
             }
+
+            .greeting {
+                font-size: 1rem;
+            }
+
+            input[type="text"] {
+                font-size: 0.9rem;
+                padding: 10px 15px;
+            }
+
+            .continue-btn {
+                font-size: 0.9rem;
+                padding: 10px 30px;
+            }
         }
     </style>
 </head>
@@ -270,11 +373,24 @@
 
     <!-- Main container -->
     <div class="container">
-        <div class="emoji">💘</div>
-        <h1>Will You Be My Valentine?</h1>
-        <div class="buttons">
-            <button class="yes-btn" onclick="handleYes()">Yes! 💕</button>
-            <button class="no-btn" onclick="handleNo()">No 😢</button>
+        <!-- Name Input Screen -->
+        <div class="name-screen" id="nameScreen">
+            <div class="emoji">💝</div>
+            <h1>Welcome!</h1>
+            <p style="color: #666; font-size: 1.1rem; margin-bottom: 10px;">Enter your full name to continue</p>
+            <input type="text" id="nameInput" placeholder="Your Full Name" maxlength="50">
+            <button class="continue-btn" id="continueBtn" onclick="handleContinue()" disabled>Continue</button>
+        </div>
+
+        <!-- Question Screen -->
+        <div class="question-screen" id="questionScreen">
+            <div class="emoji">💘</div>
+            <div class="greeting" id="greeting"></div>
+            <h1>Will You Be My Valentine?</h1>
+            <div class="buttons">
+                <button class="yes-btn" onclick="handleYes()">Yes! 💕</button>
+                <button class="no-btn" onclick="handleNo()">No 😢</button>
+            </div>
         </div>
     </div>
 
@@ -294,18 +410,46 @@
     
     <script>
         // Initialize EmailJS with your Public Key
-        // SETUP REQUIRED: Get your keys from https://www.emailjs.com/
-        // 1. Sign up at emailjs.com
-        // 2. Add an email service (Gmail)
-        // 3. Create an email template
-        // 4. Replace the values below with your actual keys
-        
-        const EMAILJS_PUBLIC_KEY = 'Vf9nxDoe9UNcxJJWg'; // Replace with your EmailJS public key
-        const EMAILJS_SERVICE_ID = 'service_xibpetc'; // Replace with your service ID
-        const EMAILJS_TEMPLATE_ID = 'template_g2vgaog'; // Replace with your template ID
-        const YOUR_EMAIL = 'rishithpa@gmail.com'; // Your email address to receive notifications
+        const EMAILJS_PUBLIC_KEY = 'Vf9nxDoe9UNcxJJWg';
+        const EMAILJS_SERVICE_ID = 'service_xibpetc';
+        const EMAILJS_TEMPLATE_ID = 'template_g2vgaog';
+        const YOUR_EMAIL = 'rishithpa@gmail.com';
 
         emailjs.init(EMAILJS_PUBLIC_KEY);
+
+        // Store user's name
+        let userName = '';
+
+        // Enable/disable continue button based on input
+        const nameInput = document.getElementById('nameInput');
+        const continueBtn = document.getElementById('continueBtn');
+
+        nameInput.addEventListener('input', function() {
+            const name = this.value.trim();
+            continueBtn.disabled = name.length === 0;
+        });
+
+        // Allow Enter key to continue
+        nameInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && this.value.trim().length > 0) {
+                handleContinue();
+            }
+        });
+
+        // Handle continue button click
+        function handleContinue() {
+            userName = nameInput.value.trim();
+            if (userName.length === 0) return;
+
+            // Hide name screen
+            document.getElementById('nameScreen').classList.add('hidden');
+            
+            // Show question screen with greeting
+            const questionScreen = document.getElementById('questionScreen');
+            const greeting = document.getElementById('greeting');
+            greeting.textContent = `Hey ${userName}!`;
+            questionScreen.classList.add('show');
+        }
 
         // Create floating hearts background
         function createHearts() {
@@ -379,7 +523,8 @@
                 to_email: YOUR_EMAIL,
                 response: response,
                 timestamp: new Date().toLocaleString(),
-                message: `Someone clicked: ${response}`
+                message: `${userName} clicked: ${response}`,
+                user_name: userName
             };
 
             emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
@@ -400,7 +545,7 @@
             
             // Show success message
             setTimeout(() => {
-                alert('Thank you! 💕 You are my Valentines now,  Yeaaaaaaaa!!!!!!!!!!');
+                alert(`Thank you ${userName}! 💕 You are my Valentine now, Yeaaaaaaaa!!!!!!!!!!`);
             }, 1000);
         }
 

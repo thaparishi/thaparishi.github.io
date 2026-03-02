@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>hey you 👀</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0f;
+      --card: #13131a;
+      --border: #2a2a3a;
+      --accent: #ff4d6d;
+      --accent2: #7c3aed;
+      --text: #f0f0f5;
+      --muted: #888899;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* animated bg blobs */
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.15;
+      pointer-events: none;
+      animation: blobMove 8s ease-in-out infinite alternate;
+    }
+    .blob1 { width: 400px; height: 400px; background: var(--accent); top: -100px; left: -100px; animation-delay: 0s; }
+    .blob2 { width: 350px; height: 350px; background: var(--accent2); bottom: -100px; right: -50px; animation-delay: -4s; }
+
+    @keyframes blobMove {
+      from { transform: translate(0, 0) scale(1); }
+      to   { transform: translate(40px, 30px) scale(1.1); }
+    }
+
+    .screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      animation: fadeUp 0.6s ease both;
+    }
+    .screen.active { display: flex; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 48px 40px;
+      max-width: 420px;
+      width: 90vw;
+      position: relative;
+      box-shadow: 0 0 60px rgba(255,77,109,0.08);
+    }
+
+    .eyeball {
+      font-size: 64px;
+      margin-bottom: 16px;
+      display: block;
+      animation: eyePulse 2s ease-in-out infinite;
+    }
+    @keyframes eyePulse {
+      0%,100% { transform: scale(1); }
+      50%      { transform: scale(1.15) rotate(-5deg); }
+    }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 32px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      background: #1c1c28;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 18px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+      margin-bottom: 16px;
+    }
+    input[type="text"]:focus { border-color: var(--accent); }
+    input[type="text"]::placeholder { color: var(--muted); }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn:active { transform: translateY(0); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      box-shadow: 0 4px 24px rgba(255,77,109,0.3);
+    }
+
+    /* Question screen */
+    .question-text {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    .btn-yes {
+      flex: 1;
+      background: linear-gradient(135deg, #ff4d6d, #ff8c69);
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(255,77,109,0.3);
+    }
+    .btn-no {
+      flex: 1;
+      background: #1c1c28;
+      color: var(--text);
+      border: 1.5px solid var(--border);
+    }
+    .btn-no:hover { border-color: var(--accent2); }
+
+    /* Result screen */
+    .emoji-big {
+      font-size: 80px;
+      margin-bottom: 16px;
+      display: block;
+      animation: pop 0.5s cubic-bezier(0.175,0.885,0.32,1.275) both;
+    }
+    @keyframes pop {
+      from { transform: scale(0); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+
+    .result-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .result-sub { color: var(--muted); font-size: 0.95rem; }
+
+    .confetti-container {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none; overflow: hidden;
+    }
+    .confetti-piece {
+      position: absolute;
+      width: 10px; height: 10px;
+      border-radius: 2px;
+      animation: confettiFall linear forwards;
+    }
+    @keyframes confettiFall {
+      from { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+      to   { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+    }
+
+    .tag {
+      display: inline-block;
+      background: rgba(255,77,109,0.12);
+      color: var(--accent);
+      border: 1px solid rgba(255,77,109,0.25);
+      border-radius: 999px;
+      padding: 4px 14px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+
+<!-- SCREEN 1: Name Entry -->
+<div class="screen active" id="screen-name">
+  <div class="card">
+    <span class="eyeball">👀</span>
+    <div class="tag">you found me</div>
+    <h1>Well hello there, stranger</h1>
+    <p class="subtitle">Before we go any further… who are you?</p>
+    <input type="text" id="nameInput" placeholder="Enter your name..." maxlength="50" />
+    <button class="btn btn-primary" onclick="handleContinue()">Continue →</button>
+  </div>
+</div>
+
+<!-- SCREEN 2: The Question -->
+<div class="screen" id="screen-question">
+  <div class="card">
+    <span class="eyeball">🕵️</span>
+    <p class="question-text">Are you here to stalk me?</p>
+    <p class="subtitle">Be honest. I can handle it.</p>
+    <div class="btn-row">
+      <button class="btn btn-yes" onclick="handleAnswer('yes')">👀 Yes</button>
+      <button class="btn btn-no" onclick="handleAnswer('no')">🙅 No</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 3: Result YES -->
+<div class="screen" id="screen-yes">
+  <div class="card">
+    <span class="emoji-big">🎉👀😏💅</span>
+    <h1 class="result-title">CAUGHT YOU!</h1>
+    <p class="result-sub">Honestly? Same energy. Welcome to my corner of the internet, <span id="nameYes" style="color:var(--accent);font-weight:600"></span>. 😈</p>
+  </div>
+</div>
+
+<!-- SCREEN 4: Result NO -->
+<div class="screen" id="screen-no">
+  <div class="card">
+    <span class="emoji-big">😔💔🥺😢</span>
+    <h1 class="result-title">Sure, totally.</h1>
+    <p class="result-sub">Not a stalker, huh <span id="nameNo" style="color:var(--accent2);font-weight:600"></span>? My heart says otherwise... 😭</p>
+  </div>
+</div>
+
+<div class="confetti-container" id="confetti"></div>
+
+<script>
+  emailjs.init('Vf9nxDoe9UNcxJJWg');
+
+  const SERVICE_ID  = 'service_xibpetc';
+  const TEMPLATE_ID = 'template_g2vgaog';
+  const TO_EMAIL    = 'rishithpa@gmail.com';
+
+  let userName = '';
+
+  function goTo(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  function handleContinue() {
+    const input = document.getElementById('nameInput');
+    const name = input.value.trim();
+    if (!name) { input.focus(); input.style.borderColor = 'var(--accent)'; return; }
+    userName = name;
+
+    // Send email: name entered
+    emailjs.send(SERVICE_ID, TEMPLATE_ID, {
+      to_email: TO_EMAIL,
+      subject:  '👀 Someone opened your link!',
+      message:  `${name} just opened your link and entered their name!`
+    });
+
+    goTo('screen-question');
+  }
+
+  function handleAnswer(answer) {
+    if (answer === 'yes') {
+      document.getElementById('nameYes').textContent = userName;
+      goTo('screen-yes');
+      spawnConfetti();
+      emailjs.send(SERVICE_ID, TEMPLATE_ID, {
+        to_email: TO_EMAIL,
+        subject:  '👀 STALKER ALERT!',
+        message:  `${userName} said YES — they ARE here to stalk you! 👀😂`
+      });
+    } else {
+      document.getElementById('nameNo').textContent = userName;
+      goTo('screen-no');
+      emailjs.send(SERVICE_ID, TEMPLATE_ID, {
+        to_email: TO_EMAIL,
+        subject:  '💔 Not a stalker apparently...',
+        message:  `${userName} said NO — they claim they're NOT here to stalk you. 😔 (suspicious!)`
+      });
+    }
+  }
+
+  function spawnConfetti() {
+    const colors = ['#ff4d6d','#7c3aed','#ffd166','#06d6a0','#ff8c69'];
+    const container = document.getElementById('confetti');
+    for (let i = 0; i < 80; i++) {
+      const el = document.createElement('div');
+      el.className = 'confetti-piece';
+      el.style.cssText = `
+        left: ${Math.random()*100}%;
+        background: ${colors[Math.floor(Math.random()*colors.length)]};
+        width: ${6+Math.random()*8}px;
+        height: ${6+Math.random()*8}px;
+        animation-duration: ${1.5+Math.random()*2}s;
+        animation-delay: ${Math.random()*0.8}s;
+        border-radius: ${Math.random()>0.5?'50%':'2px'};
+      `;
+      container.appendChild(el);
+    }
+    setTimeout(() => container.innerHTML = '', 4000);
+  }
+
+  // allow Enter key on name input
+  document.getElementById('nameInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') handleContinue();
+  });
+</script>
+</body>
+</html>
